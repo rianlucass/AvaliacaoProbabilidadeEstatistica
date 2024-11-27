@@ -1,41 +1,79 @@
-import java.util.ArrayList;
-import java.util.List;
+package Questao2;
 
-public class DistribuicaoFrequencia {
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+
+import javax.swing.*;
+
+public class DistribuicaoFrequencia extends JFrame {
+
+    static int[][] distribuicao;
+
+    public DistribuicaoFrequencia() {
+        setTitle("Distribuição de Frequência");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        JFreeChart barChart = criarGrafico();
+        ChartPanel chartPanel = new ChartPanel(barChart);
+        chartPanel.setPreferredSize(new java.awt.Dimension(800, 600));
+        setContentPane(chartPanel);
+    }
 
     public static void main(String[] args) {
-        // Exemplo de dados
-        int[] dados = {11, 12, 13, 15, 17, 19, 20, 21, 23, 25, 27, 28, 29, 30, 32, 33, 34, 35, 37, 39};
+        int[] dados = {61, 65, 43, 53, 55, 51, 58, 55, 59, 56,
+                       52, 53, 62, 49, 68, 51, 50, 67, 62, 64,
+                       53, 56, 48, 60, 61, 44, 54, 63, 53, 55,
+                       48, 54, 57, 41, 54, 71, 57, 53, 56, 48,
+                       55, 46, 57, 54, 48, 63, 55, 52, 52, 51};
 
-        // Parâmetros da tabela de frequência
-        int numeroClasses = 6; // Número de classes
-        int amplitude = 5;     // Amplitude de cada classe
+        int numeroClasses = 6;
+        int amplitude = 5;
 
-        // Construir e exibir a tabela de frequência
         construirTabela(dados, numeroClasses, amplitude);
+
+        DistribuicaoFrequencia dist = new DistribuicaoFrequencia();
+
+        System.out.println("\nModa: " + dist.calcularModa());
+        System.out.println("Média: " + dist.calcularMedia());
+        System.out.println("Mediana: " + dist.calcularMediana());
+        System.out.println("Desvio padrão: " + dist.calcularDesvioPadrao());
+
+        System.out.println("1º Quartil (Q1): " + dist.calcularPercentil(25));
+        System.out.println("3º Decil (D3): " + dist.calcularPercentil(30));
+        System.out.println("7º Decil (D7): " + dist.calcularPercentil(70));
+        System.out.println("15º Percentil (P15): " + dist.calcularPercentil(15));
+        System.out.println("90º Percentil (P90): " + dist.calcularPercentil(90));
+        dist.exibirGrafico();
     }
 
     public static void construirTabela(int[] dados, int numeroClasses, int amplitude) {
-        // Encontrar o valor mínimo para definir o limite inferior da primeira classe
         int valorMinimo = encontrarMinimo(dados);
         int limiteInferiorClasse = valorMinimo;
 
-        System.out.println("Classe       | Frequência");
-        System.out.println("-------------------------");
+        distribuicao = new int[numeroClasses][3];
 
-        // Construir cada classe e calcular a frequência
+        System.out.println("-----------------");
+        System.out.println("Classe  | Fi");
+        System.out.println("--------|--------");
+
         for (int i = 0; i < numeroClasses; i++) {
             int limiteSuperiorClasse = limiteInferiorClasse + amplitude - 1;
-
-            // Calcular a frequência dos valores dentro da classe
             int frequencia = calcularFrequencia(dados, limiteInferiorClasse, limiteSuperiorClasse);
 
-            // Exibir a classe e sua frequência
-            System.out.printf("%d - %d    | %d\n", limiteInferiorClasse, limiteSuperiorClasse, frequencia);
+            distribuicao[i][0] = limiteInferiorClasse;
+            distribuicao[i][1] = limiteSuperiorClasse;
+            distribuicao[i][2] = frequencia;
 
-            // Ajustar o limite inferior para a próxima classe
+            System.out.printf("%d - %d | %d\n", limiteInferiorClasse, limiteSuperiorClasse, frequencia);
+
             limiteInferiorClasse += amplitude;
         }
+        System.out.println("--------|--------");
     }
 
     public static int calcularFrequencia(int[] dados, int limiteInferior, int limiteSuperior) {
